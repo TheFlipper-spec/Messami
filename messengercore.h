@@ -4,7 +4,8 @@
 #include <QString>
 #include <QtQml/qqmlregistration.h>
 #include "networkmanager.h"
-#include "messagemodel.h" // Подключаем нашу модель
+#include "messagemodel.h"
+#include "databasemanager.h" // <--- ДОБАВЛЕНО
 
 class MessengerCore : public QObject
 {
@@ -13,14 +14,13 @@ class MessengerCore : public QObject
     QML_SINGLETON
 
     Q_PROPERTY(QString connectionStatus READ connectionStatus NOTIFY connectionStatusChanged)
-    // Свойство для передачи Модели в QML
     Q_PROPERTY(MessageModel* chatModel READ chatModel CONSTANT)
 
 public:
     explicit MessengerCore(QObject *parent = nullptr);
 
     QString connectionStatus() const;
-    MessageModel* chatModel() const; // Геттер модели
+    MessageModel* chatModel() const;
 
     Q_INVOKABLE void sendMessage(const QString &text);
 
@@ -30,5 +30,6 @@ signals:
 private:
     QString m_connectionStatus;
     NetworkManager *m_networkManager;
-    MessageModel *m_chatModel; // Указатель на модель
+    MessageModel *m_chatModel;
+    DatabaseManager *m_dbManager; // <--- ДОБАВЛЕНО
 };

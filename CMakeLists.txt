@@ -13,6 +13,7 @@ set(SOURCES
     messagemodel.cpp messagemodel.h
     networkmanager.cpp networkmanager.h
     framelesswindow.cpp framelesswindow.h
+    databasemanager.cpp databasemanager.h
 )
 
 if(WIN32)
@@ -26,6 +27,7 @@ qt_add_qml_module(appMessami
     VERSION 1.0
     QML_FILES Main.qml
     RESOURCES app_icon.ico
+    SOURCES databasemanager.h databasemanager.cpp
 )
 
 target_link_libraries(appMessami

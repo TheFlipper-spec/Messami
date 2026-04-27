@@ -5,7 +5,6 @@
 #include <QString>
 #include <QDateTime>
 
-// Легкая C++ структура для одного сообщения (без QObject, для скорости)
 struct Message {
     QString id;
     QString senderName;
@@ -21,7 +20,6 @@ class MessageModel : public QAbstractListModel
 public:
     explicit MessageModel(QObject *parent = nullptr);
 
-    // Ключи, по которым QML будет запрашивать данные
     enum MessageRoles {
         IdRole = Qt::UserRole + 1,
         SenderNameRole,
@@ -31,15 +29,14 @@ public:
         IsReadRole
     };
 
-    // Обязательные методы QAbstractListModel
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> roleNames() const override;
 
-    // Наши методы управления
     void addMessage(const Message &msg);
     void clear();
+    void loadHistory(const std::vector<Message> &history); // <--- ДОБАВЛЕНО
 
 private:
-    std::vector<Message> m_messages; // std::vector работает быстрее QList
+    std::vector<Message> m_messages;
 };

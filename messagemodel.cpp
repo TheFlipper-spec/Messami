@@ -18,12 +18,11 @@ QVariant MessageModel::data(const QModelIndex &index, int role) const
 
     const Message &msg = m_messages.at(index.row());
 
-    // Отдаем QML конкретное поле за O(1)
     switch (role) {
     case IdRole:         return msg.id;
     case SenderNameRole: return msg.senderName;
     case TextRole:       return msg.text;
-    case TimestampRole:  return msg.timestamp.toString("hh:mm"); // Форматируем время для UI
+    case TimestampRole:  return msg.timestamp.toString("hh:mm");
     case IsMineRole:     return msg.isMine;
     case IsReadRole:     return msg.isRead;
     default:             return QVariant();
@@ -44,7 +43,6 @@ QHash<int, QByteArray> MessageModel::roleNames() const
 
 void MessageModel::addMessage(const Message &msg)
 {
-    // Предупреждаем QML о новых данных, чтобы он плавно отрисовал их без фризов
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_messages.push_back(msg);
     endInsertRows();
@@ -54,5 +52,13 @@ void MessageModel::clear()
 {
     beginResetModel();
     m_messages.clear();
+    endResetModel();
+}
+
+// <--- ДОБАВЛЕН НОВЫЙ МЕТОД НИЖЕ --->
+void MessageModel::loadHistory(const std::vector<Message> &history)
+{
+    beginResetModel();
+    m_messages = history; // Быстро копируем весь вектор
     endResetModel();
 }

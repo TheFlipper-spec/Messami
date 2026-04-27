@@ -8,6 +8,13 @@ MessengerCore::MessengerCore(QObject *parent)
 {
     m_chatModel = new MessageModel(this);
     m_networkManager = new NetworkManager(this);
+    m_dbManager = new DatabaseManager(this); // <--- ДОБАВЛЕНО
+
+    // <--- ДОБАВЛЕНА ЗАГРУЗКА ИСТОРИИ --->
+    if (m_dbManager->initDatabase()) {
+        std::vector<Message> history = m_dbManager->loadChatHistory();
+        m_chatModel->loadHistory(history);
+    }
 
     connect(m_networkManager, &NetworkManager::connected, this, [this]() {
         m_connectionStatus = "Online";
@@ -29,9 +36,9 @@ MessengerCore::MessengerCore(QObject *parent)
         msg.isRead = false;
 
         m_chatModel->addMessage(msg);
+        m_dbManager->saveMessage(msg); // <--- СОХРАНЕНИЕ ПРИ ВХОДЯЩЕМ
     });
 
-    // ВНИМАНИЕ: Новое подключение по TCP!
     m_networkManager->connectToServer("tcpbin.com", 4242);
 }
 
@@ -58,6 +65,7 @@ void MessengerCore::sendMessage(const QString &text)
     msg.isRead = false;
 
     m_chatModel->addMessage(msg);
+    m_dbManager->saveMessage(msg); // <--- СОХРАНЕНИЕ ПРИ ОТПРАВКЕ
 
     m_networkManager->sendMessage(text);
 }
