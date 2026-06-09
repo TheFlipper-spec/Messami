@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QObject>
-#include <QTcpSocket>
+#include <QWebSocket> // Используем WebSockets вместо TCP
 #include <QString>
 
 class NetworkManager : public QObject
@@ -10,20 +10,25 @@ class NetworkManager : public QObject
 public:
     explicit NetworkManager(QObject *parent = nullptr);
 
-    // Подключение по IP/домену и порту (как в Telegram)
-    void connectToServer(const QString &host, quint16 port);
-    void sendMessage(const QString &message);
+    // Подключение теперь требует URL (например, ws://localhost:8080/ws)
+    void connectToServer(const QString &url);
+
+    // Отправка текстового сообщения в чат (внутри упакуем в JSON)
+    void sendChatMessage(const QString &senderName, const QString &text);
 
 signals:
     void connected();
     void disconnected();
-    void messageReceived(const QString &message);
+
+    // Вместо сырой строки отдаем готовые данные для MessageModel
+    void chatMessageReceived(const QString &sender, const QString &text, qint64 timestamp);
 
 private slots:
     void onConnected();
-    void onReadyRead(); // Этот слот читает сырые байты TCP
+    void onDisconnected();
+    void onTextMessageReceived(const QString &message); // Ловим текстовые фреймы (JSON)
     void onErrorOccurred(QAbstractSocket::SocketError error);
 
 private:
-    QTcpSocket m_socket; // Наш быстрый TCP сокет
+    QWebSocket m_webSocket; // Наш WebSocket клиент
 };

@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick Network Widgets Sql)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick Network Widgets Sql WebSockets QuickControls2 Svg)
 
 set(SOURCES
     main.cpp
@@ -26,8 +26,13 @@ qt_add_qml_module(appMessami
     URI Messami
     VERSION 1.0
     QML_FILES Main.qml
-    RESOURCES app_icon.ico
+    QML_FILES loginscreen.qml
+    QML_FILES chatsscreen.qml
+    RESOURCES app_icon.ico Resources/icons/paperclip.svg
     SOURCES databasemanager.h databasemanager.cpp
+    SOURCES chatclient.h chatclient.cpp
+    SOURCES geomanager.h geomanager.cpp
+
 )
 
 target_link_libraries(appMessami
@@ -39,6 +44,9 @@ target_link_libraries(appMessami
         Qt6::Network
         Qt6::Widgets
         Qt6::Sql
+        Qt6::WebSockets
+        Qt6::QuickControls2
+        Qt6::Svg
 )
 
 if(WIN32)
